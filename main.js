@@ -47,8 +47,10 @@ moment.locale("tr");
       "from"
     );
     const dateToStr = new URLSearchParams(window.location.search)?.get("to");
+
     let dateFrom = moment(dateFromStr, dateFormat);
     let dateTo = moment(dateToStr, dateFormat);
+    let isUpdatingAttribures = false;
 
     if (dateFrom.isValid() && (!dateTo || !dateTo.isValid())) {
       dateTo = dateFrom;
@@ -76,6 +78,7 @@ moment.locale("tr");
       } else if (dateTo.isBefore(dateFrom)) {
         dateFrom = dateTo;
       }
+
       handleDateSelection(
         dateFrom.format(dateFormat),
         dateTo.format(dateFormat)
@@ -98,6 +101,7 @@ moment.locale("tr");
     dateDropdown.setAttribute("max-date", currentDate);
 
     dateDropdown.addEventListener("dateRangeChange", (event) => {
+      if (isUpdatingAttribures) return;
       const selectedDateFrom = event.detail.from;
       const selectedDateTo = event.detail.to;
 
@@ -107,6 +111,9 @@ moment.locale("tr");
         : dateFrom.clone();
 
       if (dateFrom.isValid() && dateTo.isValid()) {
+        isUpdatingAttribures = true;
+        dateDropdown.setAttribute("from", dateFrom.format(dateFormat));
+        dateDropdown.setAttribute("to", dateTo.format(dateFormat));
         handleDateSelection(
           dateFrom.format(dateFormat),
           dateTo.format(dateFormat)
@@ -115,20 +122,41 @@ moment.locale("tr");
           dateFrom.format(dateFormat),
           dateTo.format(dateFormat)
         );
+        isUpdatingAttribures = false;
       }
     });
 
     const observer = new MutationObserver(() => {
       const buttonParent = dateDropdown.shadowRoot.querySelector(".pull-right");
-      if (buttonParent) {
-        observer.disconnect();
-      }
+
+      const datePicker =
+        dateDropdown.shadowRoot.querySelector("ix-date-picker");
+
       const dropdownToggle =
         dateDropdown.shadowRoot.querySelector("ix-dropdown");
+
+      if (buttonParent && datePicker && dropdownToggle) {
+        observer.disconnect();
+      }
+
       if (dateFrom.isValid() && dateTo.isValid()) {
         dropdownToggle.classList.add("show");
         dropdownToggle.setAttribute("show", "");
+        dropdownToggle.setAttribute(
+          "styles",
+          "margin: 0px; position: fixed; top: 0px; left: 0px; transform: translate(0px, 32px);"
+        );
+        const minDate = dateFrom.clone().subtract(7, "days").format(dateFormat);
+        const maxDate = moment().isBefore(dateFrom.clone().add(7, "days"))
+          ? currentDate
+          : dateFrom.clone().add(7, "days").format(dateFormat);
+        datePicker.setAttribute("min-date", minDate);
+        datePicker.setAttribute("max-date", maxDate);
+      } else {
+        datePicker.removeAttribute("min-date");
+        datePicker.setAttribute("max-date", currentDate);
       }
+
       buttonParent?.setAttribute(
         "style",
         "display:flex; flex-direction: row; justify-content: space-between; width: 100%;"
@@ -150,11 +178,27 @@ moment.locale("tr");
           clearDateSelection(dateFrom, dateTo);
           dateDropdown.setAttribute("from", "");
           dateDropdown.setAttribute("to", "");
-          clearButton.setAttribute("disabled", "");
+          datePicker.removeAttribute("min-date");
+          datePicker.setAttribute("max-date", currentDate);
         });
-      } else {
-        clearButton.setAttribute("disabled", "");
       }
+
+      datePicker.addEventListener("dateChange", (event) => {
+        const { from } = event.detail;
+        if (from) {
+          const fromDate = moment(from, dateFormat);
+          const minDate = fromDate
+            .clone()
+            .subtract(7, "days")
+            .format(dateFormat);
+
+          const maxDate = moment().isBefore(fromDate.clone().add(7, "days"))
+            ? currentDate
+            : fromDate.clone().add(7, "days").format(dateFormat);
+          datePicker.setAttribute("min-date", minDate);
+          datePicker.setAttribute("max-date", maxDate);
+        }
+      });
     });
 
     observer.observe(dateDropdown.shadowRoot, {
