@@ -1,5 +1,7 @@
 # Siemens IX Date Dropdown Implementation
 
+[Live Demo](https://ix-date-dropdown.netlify.app/?from=dd.mm.yyyy&to=dd.mm.yyyy)
+
 # About Project
 
 Implementation of the ix-date-dropdown web component in plain Javascript.
