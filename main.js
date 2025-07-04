@@ -94,7 +94,7 @@ moment.locale("tr");
 
     const dateDropdown = document.querySelector("ix-date-dropdown");
     dateDropdown.setAttribute("format", "dd.MM.yyyy");
-    if (dateFrom.isValid() && dateTo.isValid()) {
+    if (dateFrom.isValid() && dateTo.isValid() && dateDropdown) {
       dateDropdown.setAttribute("from", dateFrom.format(dateFormat));
       dateDropdown.setAttribute("to", dateTo.format(dateFormat));
     }
