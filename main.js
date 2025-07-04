@@ -52,49 +52,9 @@ moment.locale("tr");
     let dateTo = moment(dateToStr, dateFormat);
     let isUpdatingAttribures = false;
 
-    if (dateFrom.isValid() && (!dateTo || !dateTo.isValid())) {
-      dateTo = dateFrom;
-      handleDateSelection(
-        dateFrom.format(dateFormat),
-        dateTo.format(dateFormat)
-      );
-      changeUrlParameters(
-        dateFrom.format(dateFormat),
-        dateTo.format(dateFormat)
-      );
-    } else if ((!dateFrom || !dateFrom.isValid()) && dateTo.isValid()) {
-      dateFrom = dateTo;
-      handleDateSelection(
-        dateFrom.format(dateFormat),
-        dateTo.format(dateFormat)
-      );
-      changeUrlParameters(
-        dateFrom.format(dateFormat),
-        dateTo.format(dateFormat)
-      );
-    } else if (dateFrom.isValid() && dateTo.isValid()) {
-      if (dateFrom.isAfter(dateTo)) {
-        dateTo = dateFrom;
-      } else if (dateTo.isBefore(dateFrom)) {
-        dateFrom = dateTo;
-      }
-
-      handleDateSelection(
-        dateFrom.format(dateFormat),
-        dateTo.format(dateFormat)
-      );
-      changeUrlParameters(
-        dateFrom.format(dateFormat),
-        dateTo.format(dateFormat)
-      );
-    } else {
-      handleDateSelection(null, null);
-      changeUrlParameters(null, null);
-    }
-
     const dateDropdown = document.querySelector("ix-date-dropdown");
     dateDropdown.setAttribute("format", "dd.MM.yyyy");
-    if (dateFrom.isValid() && dateTo.isValid() && dateDropdown) {
+    if (dateFrom.isValid() && dateTo.isValid()) {
       dateDropdown.setAttribute("from", dateFrom.format(dateFormat));
       dateDropdown.setAttribute("to", dateTo.format(dateFormat));
     }
@@ -137,6 +97,46 @@ moment.locale("tr");
 
       if (buttonParent && datePicker && dropdownToggle) {
         observer.disconnect();
+      }
+
+      if (dateFrom.isValid() && (!dateTo || !dateTo.isValid())) {
+        dateTo = dateFrom;
+        handleDateSelection(
+          dateFrom.format(dateFormat),
+          dateTo.format(dateFormat)
+        );
+        changeUrlParameters(
+          dateFrom.format(dateFormat),
+          dateTo.format(dateFormat)
+        );
+      } else if ((!dateFrom || !dateFrom.isValid()) && dateTo.isValid()) {
+        dateFrom = dateTo;
+        handleDateSelection(
+          dateFrom.format(dateFormat),
+          dateTo.format(dateFormat)
+        );
+        changeUrlParameters(
+          dateFrom.format(dateFormat),
+          dateTo.format(dateFormat)
+        );
+      } else if (dateFrom.isValid() && dateTo.isValid()) {
+        if (dateFrom.isAfter(dateTo)) {
+          dateTo = dateFrom;
+        } else if (dateTo.isBefore(dateFrom)) {
+          dateFrom = dateTo;
+        }
+
+        handleDateSelection(
+          dateFrom.format(dateFormat),
+          dateTo.format(dateFormat)
+        );
+        changeUrlParameters(
+          dateFrom.format(dateFormat),
+          dateTo.format(dateFormat)
+        );
+      } else {
+        handleDateSelection(null, null);
+        changeUrlParameters(null, null);
       }
 
       if (dateFrom.isValid() && dateTo.isValid()) {
