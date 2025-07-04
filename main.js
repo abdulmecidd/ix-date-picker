@@ -125,7 +125,6 @@ moment.locale("tr");
         } else if (dateTo.isBefore(dateFrom)) {
           dateFrom = dateTo;
         }
-
         handleDateSelection(
           dateFrom.format(dateFormat),
           dateTo.format(dateFormat)
